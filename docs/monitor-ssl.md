@@ -266,10 +266,13 @@ telegram_group_id = get_env_variable("TELEGRAM_GROUP_ID")
 
 ### 6. cloudfunction設定
 - 觸發條件選擇 HTTPS，並且須通過驗證
+
 ![](assets/monitor-ssl/2.png)
 - 執行環境變數，需要將原本從系統取得的環境變數在這裡設定
+
 ![](assets/monitor-ssl/3.png)
 - 入口函數需要將原先寫在 main function 的部分移到這裡
+
 ![](assets/monitor-ssl/4.png)
 
 設定好後可以測試看看是否正常，可在紀錄查看執行結果
