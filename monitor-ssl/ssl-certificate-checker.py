@@ -36,7 +36,7 @@ def check_ssl_expiration(domain, env, platform, telegram_bot_token, telegram_gro
                 [
                     "來源: Gitlab-Runner",
                     "標題: 憑證到期",
-                    f"域名: {domain}",
+                    f"domain : {domain}",
                     f"到期日: {expire_date.strftime('%Y-%m-%d')}",
                     f"平台: {platform}",
                     f"環境: {env}",
