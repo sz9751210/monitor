@@ -1,0 +1,4 @@
+mongodb_uri: "mongodb://rootuser:rootpass@localhost:27017/mydatabase?authSource=admin"
+telegram_bot_token: "your-token"
+platform: "your-platform"
+telegram_group_id: "your-chat-id"
