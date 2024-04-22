@@ -13,7 +13,7 @@ from mongo import (
     bulk_add_domains_to_mongodb,
     get_domain_from_mongodb,
 )
-from cert import get_ssl_cert_info, parse_ssl_cert_info
+from cert import get_ssl_cert_info
 from scheduler_jobs import setup_scheduler
 
 mongodb_uri = "mongodb://rootuser:rootpass@localhost:27017/mydatabase?authSource=admin"
@@ -45,24 +45,6 @@ def handle_add_command(message):
             bot.reply_to(message, "domain 新增失敗，請檢查輸入的資料。")
     else:
         bot.reply_to(message, "證書檢查失敗,請檢查輸入的 domain 是否正確。")
-
-
-@bot.message_handler(commands=["cert_info"])
-def send_cert_info(message):
-    try:
-        _, get_domain = message.text.split(maxsplit=1)
-    except ValueError:
-        bot.send_message(
-            message.chat.id, "請提供一個 domain 。例如：/cert_info example.com"
-        )
-        return
-    cert = get_ssl_cert_info(get_domain, check_only=False)
-    if cert is None or cert is False:
-        error_message = f"domain 錯誤: 無法獲取 {get_domain} 的 SSL 證書資訊。"
-        bot.send_message(message.chat.id, error_message)
-    else:
-        cert_info = parse_ssl_cert_info(get_domain, cert)
-        bot.send_message(message.chat.id, cert_info)
 
 
 @bot.message_handler(commands=["get_all"])
