@@ -1,0 +1,25 @@
+version: '3.1'
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb_container
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: rootuser
+      MONGO_INITDB_ROOT_PASSWORD: rootpass
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data_container:/data/db
+
+  mongoshell:
+    image: mongo:latest
+    container_name: mongodb_mongoshell
+    depends_on:
+      - mongodb
+    entrypoint: ["mongosh", "--host", "mongodb", "--username", "rootuser", "--password", "rootpass", "--authenticationDatabase", "admin"]
+    stdin_open: true
+    tty: true
+
+volumes:
+  mongodb_data_container:
