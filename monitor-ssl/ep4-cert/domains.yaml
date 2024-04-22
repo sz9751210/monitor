@@ -1,0 +1,7 @@
+domain_envs:
+  live:
+    - google.com
+    - en.wikipedia.org
+  test:
+    - abc.com
+    - example.com
