@@ -20,7 +20,7 @@ def get_ssl_cert_expiry_date(domain):
         expire_date = datetime.strptime(ssl_info["notAfter"], "%b %d %H:%M:%S %Y %Z")
         return expire_date
     except Exception as e:
-        print(f"無法獲取 {domain} 的 SSL 證書過期日期，錯誤：{e}")
+        print(f"無法取得 {domain} 的 SSL 證書過期日期，錯誤：{e}")
         return None
     finally:
         conn.close()

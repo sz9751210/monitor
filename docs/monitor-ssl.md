@@ -33,10 +33,10 @@ def get_ssl_cert_expiry_date(domain):
     取得 SSL 證書的過期日期。
 
     參數:
-        domain (str): 需要檢查SSL證書過期時間的 domain 。
+        domain (str): 需要檢查SSL證書過期時間的 domain。
 
     返回:
-        datetime: SSL證書的過期日期，如果獲取失敗則返回None。
+        datetime: SSL證書的過期日期，如果取得失敗則返回None。
     """
     # 建立SSL上下文，建立一個安全的“環境”來管理SSL設定和操作
     ssl_context = ssl.create_default_context()
@@ -54,7 +54,7 @@ def get_ssl_cert_expiry_date(domain):
         return expire_date
     except Exception as e:
         # 處理連接或取得證書訊息過程中的異常
-        print(f"無法獲取 {domain} 的 SSL 證書過期日期，錯誤：{e}")
+        print(f"無法取得 {domain} 的 SSL 證書過期日期，錯誤：{e}")
         return None
     finally:
         # 確保無論成功與否，都關閉與服務器的連接
@@ -95,9 +95,9 @@ def check_ssl_expiration(domain):
     檢查給定 domain 的SSL證書過期時間，並在證書即將過期時印出。
 
     參數:
-        domain (str): 需要檢查SSL證書的 domain 。
+        domain (str): 需要檢查SSL證書的 domain。
     """
-    # 調用先前定義的函數get_ssl_cert_expiry_date來獲取SSL證書的過期日期。
+    # 調用先前定義的函數get_ssl_cert_expiry_date來取得SSL證書的過期日期。
     expire_date = get_ssl_cert_expiry_date(domain)
     # 如果成功取得到過期日期
     if expire_date:
@@ -171,7 +171,7 @@ def check_ssl_expiration(domain, env, platform, telegram_bot_token, telegram_gro
     檢查給定 domain 的SSL證書過期時間，並在證書即將過期時通過webhook發送通知。
 
     參數:
-        domain (str): 需要檢查SSL證書的 domain 。
+        domain (str): 需要檢查SSL證書的 domain。
         env (str): 環境標籤（例如：開發、測試、正式），用於消息中以區分不同環境。
         platform (str): 平台標籤（例如：AWS、GCP、Azure），用於消息中以標明證書部署的平台。
         telegram_token (str): 要使用的telegram bot token。
@@ -229,7 +229,7 @@ def load_data_from_yaml(yaml_file_path, key):
             # 使用yaml.safe_load(file)安全地加載YAML檔案的內容。
             # 此函數將YAML檔案的結構轉換為Python資料類型（通常是字典）。
             data = yaml.safe_load(file)
-            # 嘗試從加載的資料中獲取特定鍵（key）的值。
+            # 嘗試從加載的資料中取得特定鍵（key）的值。
             # 如果鍵不存在，則默認返回一個空字典{}。
             return data.get(key, {})
     except FileNotFoundError as e:
@@ -247,7 +247,7 @@ yaml_file_path = 'config.yaml'
 domain_envs = load_data_from_yaml(yaml_file_path, 'domain_envs')
 ```
 
-這裡主要使用 `yaml` 進行一些讀取操作，使我可以獲取到 `domain_envs`。
+這裡主要使用 `yaml` 進行一些讀取操作，使我可以取得到 `domain_envs`。
 印出的格式如下：
 
 ```python
