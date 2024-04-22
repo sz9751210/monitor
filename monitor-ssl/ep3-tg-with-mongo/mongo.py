@@ -8,11 +8,9 @@ mongodb_uri = "mongodb://rootuser:rootpass@localhost:27017/mydatabase?authSource
 
 def init_mongo_client(mongodb_uri):
     try:
-        # 嘗試連接 MongoDB
         client = MongoClient(mongodb_uri)
 
-        # 嘗試獲取服務器信息，以確認連接
-        info = client.server_info()  # 會在連接失敗時拋出 ConnectionFailure 異常
+        info = client.server_info()
         mongodb_version = info["version"]
         print("MongoDB 連接成功。Mongo 版本為", mongodb_version)
         return client
@@ -43,23 +41,20 @@ def write_domain_data_to_mongodb(collection, domain_data):
     print("domain_data", domain_data)
     for env, domains in domain_data.items():
         document = {"env": env, "domains": domains}
-        # 更新條件，這裡假設 env 是唯一的
         query = {"env": env}
-        # 使用 upsert=True，如果不存在則插入，存在則更新
         collection.update_one(query, {"$set": document}, upsert=True)
-    print("數據已成功寫入 MongoDB。")
+    print("資料已成功寫入 MongoDB。")
 
 
 def add_domain_to_mongodb(collection, env, domain):
-    # 嘗試添加或更新該 env 的域名
     result = collection.update_one(
         {"env": env}, {"$addToSet": {"domains": domain}}, upsert=True
     )
     if result.matched_count > 0 or result.upserted_id is not None:
-        print("域名已成功添加或更新。")
+        print("domain 已成功新增或更新。")
         return True
     else:
-        print("域名添加或更新失敗。")
+        print("domain 新增或更新失敗。")
         return False
 
 
@@ -74,48 +69,40 @@ def load_domain_envs_from_mongodb(collection):
                 domain_envs[env] = domains
         return domain_envs
     except Exception as e:
-        print(f"從 MongoDB 讀取數據失敗: {e}")
+        print(f"從 MongoDB 讀取資料失敗: {e}")
         return {}
 
 
 def get_domain_from_mongodb(collection, env, domain):
-    # 構造查詢條件，这里使用 $elemMatch 来匹配数组中的元素
     query = {"env": env, "domains": {"$elemMatch": {"$eq": domain}}}
-    # 執行查詢操作
     result = collection.find_one(query)
-    
+
     if result:
-        # 检查是否真的包含了指定的域名，防止空数组等异常情况
         if domain in result.get("domains", []):
-            print(f"在环境 '{env}' 下找到域名 '{domain}' 的信息。")
-            # 可以根据需要调整返回的信息结构
+            print(f"在環境 '{env}' 下找到 domain  '{domain}' 的訊息。")
             return {"env": env, "domain": domain}
         else:
-            print(f"在环境 '{env}' 下未找到域名 '{domain}' 的具体信息，尽管匹配到了文档。")
+            print(f"在環境 '{env}' 下未找到 domain  '{domain}' 的具體訊息。")
             return None
     else:
-        # 没有找到相应的文档
-        print(f"在环境 '{env}' 下未找到域名 '{domain}' 的信息。")
+        print(f"在環境 '{env}' 下未找到 domain  '{domain}' 的訊息。")
         return None
 
 
 def update_domain_in_mongodb(collection, env_value, old_domain, new_domain):
-    # 構造查詢條件和更新動作
     query = {"env": env_value, "domains": old_domain}
     update_action = {"$set": {"domains.$": new_domain}}
 
-    # 執行更新操作
     update_result = collection.update_many(query, update_action)
 
-    # 判斷是否有文檔被成功更新
     if update_result.matched_count > 0:
         print(
             f"成功更新文檔。匹配數量: {update_result.matched_count}, 修改數量: {update_result.modified_count}."
         )
-        return True  # 返回 True 表示至少有一個文檔被成功更新
+        return True
     else:
-        print("未找到匹配的文檔或域名，更新未執行。")
-        return False  # 返回 False 表示沒有文檔被更新
+        print("未找到匹配的文檔或 domain ，更新未執行。")
+        return False
 
 
 def delete_domain_in_mongodb(collection, env_value, domain_to_delete):
@@ -123,23 +110,22 @@ def delete_domain_in_mongodb(collection, env_value, domain_to_delete):
     delete_action = {"$pull": {"domains": domain_to_delete}}
     result = collection.update_one(query, delete_action)
     if result.modified_count > 0:
-        print("域名已成功刪除。")
+        print("domain 已成功刪除。")
         return True
     else:
-        print("未找到匹配的域名或環境，刪除未執行。")
+        print("未找到匹配的 domain 或環境，刪除未執行。")
         return False
 
 
 def bulk_add_domains_to_mongodb(collection, env, domains):
-    # 使用 $addToSet 和 $each 來同時添加多個唯一的域名到相同的 env 中
     result = collection.update_one(
         {"env": env}, {"$addToSet": {"domains": {"$each": domains}}}, upsert=True
     )
     if result.matched_count > 0 or result.upserted_id is not None:
-        print("域名已成功批量添加或更新。")
+        print("domain 已成功批量新增或更新。")
         return True
     else:
-        print("域名批量添加或更新失敗。")
+        print("domain 批量新增或更新失敗。")
         return False
 
 

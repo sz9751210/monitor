@@ -43,7 +43,7 @@ def write_domain_data_to_mongodb(collection, domain_data):
         document = {"env": env, "domains": domains}
         query = {"env": env}
         collection.update_one(query, {"$set": document}, upsert=True)
-    print("數據已成功寫入 MongoDB。")
+    print("資料已成功寫入 MongoDB。")
 
 
 def add_domain_to_mongodb(collection, env, domain):
@@ -51,10 +51,10 @@ def add_domain_to_mongodb(collection, env, domain):
         {"env": env}, {"$addToSet": {"domains": domain}}, upsert=True
     )
     if result.matched_count > 0 or result.upserted_id is not None:
-        print("domain 已成功添加或更新。")
+        print("domain 已成功新增或更新。")
         return True
     else:
-        print("domain 添加或更新失敗。")
+        print("domain 新增或更新失敗。")
         return False
 
 
@@ -69,7 +69,7 @@ def load_domain_envs_from_mongodb(collection):
                 domain_envs[env] = domains
         return domain_envs
     except Exception as e:
-        print(f"從 MongoDB 讀取數據失敗: {e}")
+        print(f"從 MongoDB 讀取資料失敗: {e}")
         return {}
 
 
@@ -122,10 +122,10 @@ def bulk_add_domains_to_mongodb(collection, env, domains):
         {"env": env}, {"$addToSet": {"domains": {"$each": domains}}}, upsert=True
     )
     if result.matched_count > 0 or result.upserted_id is not None:
-        print("domain 已成功批量添加或更新。")
+        print("domain 已成功批量新增或更新。")
         return True
     else:
-        print("domain 批量添加或更新失敗。")
+        print("domain 批量新增或更新失敗。")
         return False
 
 

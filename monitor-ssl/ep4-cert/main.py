@@ -40,9 +40,9 @@ def handle_add_command(message):
         add_successful = add_domain_to_mongodb(collection, env, domain)
 
         if add_successful:
-            bot.reply_to(message, f"domain 添加成功\n環境為{env}\ndomain為{domain}")
+            bot.reply_to(message, f"domain 新增成功\n環境為{env}\ndomain為{domain}")
         else:
-            bot.reply_to(message, "domain 添加失敗，請檢查輸入的數據。")
+            bot.reply_to(message, "domain 新增失敗，請檢查輸入的資料。")
     else:
         bot.reply_to(message, "證書檢查失敗,請檢查輸入的 domain 是否正確。")
 
@@ -113,7 +113,7 @@ def handle_edit_command(message):
     if update_result:
         bot.reply_to(message, "domain 更新成功。")
     else:
-        bot.reply_to(message, "domain 更新失敗，請檢查輸入的數據。")
+        bot.reply_to(message, "domain 更新失敗，請檢查輸入的資料。")
 
 
 @bot.message_handler(commands=["del"])
@@ -131,7 +131,7 @@ def handle_delete_command(message):
     if delete_successful:
         bot.reply_to(message, "domain 刪除成功。")
     else:
-        bot.reply_to(message, "domain 刪除失敗，請檢查輸入的數據。")
+        bot.reply_to(message, "domain 刪除失敗，請檢查輸入的資料。")
 
 
 @bot.message_handler(commands=["bulk_add"])
@@ -150,9 +150,9 @@ def handle_bulk_add_command(message):
     success = bulk_add_domains_to_mongodb(collection, env, domains)
 
     if success:
-        bot.reply_to(message, "domain 批量添加成功。")
+        bot.reply_to(message, "domain 批量新增成功。")
     else:
-        bot.reply_to(message, "domain 批量添加失敗，請檢查輸入的數據。")
+        bot.reply_to(message, "domain 批量新增失敗，請檢查輸入的資料。")
 
 
 def run_schedule():
