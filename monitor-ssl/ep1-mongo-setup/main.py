@@ -49,6 +49,19 @@ def write_domain_data_to_mongodb(collection, domain_data):
     print("數據已成功寫入 MongoDB。")
 
 
+def add_domain_to_mongodb(collection, env, domain):
+    # 嘗試添加或更新該 env 的域名
+    result = collection.update_one(
+        {"env": env}, {"$addToSet": {"domains": domain}}, upsert=True
+    )
+    if result.matched_count > 0 or result.upserted_id is not None:
+        print("域名已成功添加或更新。")
+        return True
+    else:
+        print("域名添加或更新失敗。")
+        return False
+
+
 def load_domain_envs_from_mongodb(collection):
     try:
         domain_envs = {}
@@ -62,6 +75,22 @@ def load_domain_envs_from_mongodb(collection):
     except Exception as e:
         print(f"從 MongoDB 讀取數據失敗: {e}")
         return {}
+
+
+def get_domain_from_mongodb(collection, env, domain):
+    # 構造查詢條件
+    query = {"env": env, "domains": domain}
+    # 執行查詢操作
+    result = collection.find_one(query)
+    print("get result", result)
+    if result:
+        # 找到了相應的文檔，返回域名信息
+        print(f"在環境 '{env}' 下找到域名 '{domain}' 的信息。")
+        return result
+    else:
+        # 沒有找到相應的文檔
+        print(f"在環境 '{env}' 下未找到域名 '{domain}' 的信息。")
+        return None
 
 
 def update_domain_in_mongodb(collection, env_value, old_domain, new_domain):
@@ -94,16 +123,25 @@ if __name__ == "__main__":
     domain_data = load_data_from_yaml(yaml_file_path, "domain_envs")
     write_domain_data_to_mongodb(collection, domain_data)
     mongo_domain_data = load_domain_envs_from_mongodb(collection)
-    print("mongo data : ", mongo_domain_data)
+    print("初始化 Mongo data : ", mongo_domain_data)
+    add_env = "prod"
+    add_domain = "alan.com"
+    add_domain_to_mongodb(collection, add_env, add_domain)
+    mongo_domain_data = load_domain_envs_from_mongodb(collection)
+    print("新增後的 Mongo data : ", mongo_domain_data)
+    print("查詢單一 domain")
+    get_env = "prod"
+    get_domain = "alan.com"
+    get_domain_from_mongodb(collection, get_env, get_domain)
     update_env = "test"
     origin_domain = "abc.com"
     new_domain = "github.com"
     update_domain_in_mongodb(collection, update_env, origin_domain, new_domain)
     mongo_domain_data = load_domain_envs_from_mongodb(collection)
-    print("updated result : ", mongo_domain_data)
+    print("更新後的 Mongo data : ", mongo_domain_data)
     delete_env = "test"
     delete_domain = "example.com"
     delete_domain_in_mongodb(collection, delete_env, delete_domain)
     mongo_domain_data = load_domain_envs_from_mongodb(collection)
-    print("delete result : ", mongo_domain_data)
+    print("刪除後的 Mongo data : ", mongo_domain_data)
     client.close()
