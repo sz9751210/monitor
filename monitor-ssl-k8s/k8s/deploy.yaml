@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: ssl-checker
+  name: ssl-checker-deployment
+  labels:
+    app: ssl-checker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ssl-checker
+  template:
+    metadata:
+      labels:
+        app: ssl-checker
+    spec:
+      containers:
+        - name: ssl-checker
+          image: python-bot-k8s
+          imagePullPolicy: Never
+          env:
+            - name: TELEGRAM_BOT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: ssl-checker-secret
+                  key: TELEGRAM_BOT_TOKEN
+            - name: TELEGRAM_GROUP_ID
+              valueFrom:
+                secretKeyRef:
+                  name: ssl-checker-secret
+                  key: TELEGRAM_GROUP_ID
+            - name: MONGODB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: ssl-checker-secret
+                  key: MONGODB_URI

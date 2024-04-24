@@ -1,0 +1,15 @@
+domain_envs:
+  gcp:
+    live:
+      - google.com
+      - en.wikipedia.org
+    test:
+      - abc.com
+      - example.com
+  aws:
+    live:
+      - google.com
+      - en.wikipedia.org
+    test:
+      - abc.com
+      - example.com
