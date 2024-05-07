@@ -20,6 +20,12 @@ class YamlConfigLoader:
             "telegram_group_id": self.config.get("telegram_group_id", None),
         }
 
+    def get_cloudflare_config(self):
+        return {
+            "cloudflare_email": self.config.get("cloudflare_email", None),
+            "cloudflare_api_key": self.config.get("cloudflare_api_key", None),
+        }
+
 
 class EnvConfigLoader:
     @staticmethod
@@ -31,4 +37,11 @@ class EnvConfigLoader:
         return {
             "telegram_bot_token": os.getenv("TELEGRAM_BOT_TOKEN", ""),
             "telegram_group_id": os.getenv("TELEGRAM_GROUP_ID", ""),
+        }
+
+    @staticmethod
+    def get_cloudflare_config():
+        return {
+            "cloudflare_email": os.getenv("CLOUDFLARE_EMAIL", ""),
+            "cloudflare_api_key": os.getenv("CLOUDFLARE_API_KEY", ""),
         }
