@@ -17,12 +17,12 @@ class DomainService:
         else:
             raise Exception(f"Domain not found for  {domain}")
 
-    def get_platform_info(self, platform):
-        platform_data = self.repo.get_platform_data_from_mongodb(platform)
-        if platform_data:
-            return platform_data
+    def get_subdomain_info(self, subdomain):
+        subdomain_data = self.repo.get_subdomain_data_from_mongodb(subdomain)
+        if subdomain_data:
+            return subdomain_data
         else:
-            raise Exception(f"No domain information found for platform {platform}")
+            raise Exception(f"No subdomain information found for {subdomain}")
 
     def get_all_domains(self):
         all_domains = self.repo.get_all_domains_from_mongodb()

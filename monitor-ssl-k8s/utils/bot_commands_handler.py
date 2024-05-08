@@ -18,17 +18,17 @@ def setup_handlers(bot, service):
         except Exception as e:
             bot.reply_to(message, str(e))
 
-    @bot.message_handler(commands=["get_platform"])
-    def handle_get_platform_command(message):
+    @bot.message_handler(commands=["get_subdomain"])
+    def handle_get_subdomain_command(message):
         try:
-            _, platform = message.text.split(maxsplit=1)
-            platform_info = service.get_platform_info(platform)
-            platform_info_yaml = convert_to_yaml(platform_info)
-            bot.reply_to(message, platform_info_yaml)
+            _, subdomain = message.text.split(maxsplit=1)
+            subdomain_info = service.get_subdomain_info(subdomain)
+            subdomain_info_yaml = convert_to_yaml(subdomain_info)
+            bot.reply_to(message, subdomain_info_yaml)
         except ValueError:
             bot.reply_to(
                 message,
-                "使用方式不正確。請按照以下格式輸入：\n/get_platform <platform>",
+                "使用方式不正確。請按照以下格式輸入：\n/get_subdomain <subdomain>",
             )
         except Exception as e:
             bot.reply_to(message, str(e))
@@ -201,7 +201,7 @@ def setup_handlers(bot, service):
 
 /cert_info <domain> - 取得指定 domain 的 SSL 證書資訊。
 /get_all - 從 MongoDB 取得所有 platform 及其下的所有 env 和 domain 的資訊。
-/get_platform <platform> - 取得指定 platform 下所有 env 的 domain 資訊。
+/get_subdomain <subdomain> - 取得指定 subdomain 的資訊。
 /get <domain> - 取得指定 domain 下的所有 subdomain 的資訊。
 /add <platform> <env> <domain> - 向 MongoDB 新增一個新的 domain 及其環境和平台。
 /bulk_add <platform> <env> <domain1> <domain2> ... - 向 MongoDB 批量新增多個 domain 及其環境和平台。

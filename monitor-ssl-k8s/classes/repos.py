@@ -39,15 +39,23 @@ class DomainRepo:
             self.logger.info(f"未找到 '{domain}' 的訊息。")
             return None
 
-    def get_platform_data_from_mongodb(self, platform):
-        query = {"platform": platform}
+    def get_subdomain_data_from_mongodb(self, subdomain):
+        # 使用 MongoDB 的 $elemMatch 來匹配子陣列中的元素
+        query = {"subdomains": {"$elemMatch": {"name": subdomain}}}
         result = self.collection.find_one(query)
 
         if result:
-            self.logger.info(f"Found domain information for platform '{platform}'.")
-            return {"platform": platform, "envs": result.get("envs", {})}
+            # 從結果中提取子域名資訊
+            subdomain_info = next((item for item in result["subdomains"] if item["name"] == subdomain), None)
+            if subdomain_info:
+                self.logger.info(f"Found subdomain information for '{subdomain}'.")
+                # 返回子域名和它所屬的主域名
+                return {"subdomain": subdomain, "domain": result["domain"], "check": subdomain_info.get("check")}
+            else:
+                self.logger.info(f"Subdomain '{subdomain}' not found in the results.")
+                return None
         else:
-            self.logger.info(f"No domain information found for platform '{platform}'.")
+            self.logger.info(f"No domain information found containing subdomain '{subdomain}'.")
             return None
 
     def get_all_domains_from_mongodb(self):
