@@ -10,8 +10,8 @@ class YamlConfigLoader:
         with open(filename, "r") as file:
             return yaml.safe_load(file)
 
-    def get_mongodb_uri(self):
-        return self.config.get("mongodb_uri", None)
+    def get_mongodb_config(self):
+        return {"mongodb_uri": self.config.get("mongodb_uri", None)}
 
     def get_telegram_config(self):
         return {
@@ -29,8 +29,8 @@ class YamlConfigLoader:
 
 class EnvConfigLoader:
     @staticmethod
-    def get_mongodb_uri():
-        return os.getenv("MONGODB_URI", "")
+    def get_mongodb_config():
+        return {"mongodb_uri": os.getenv("MONGODB_URI", "")}
 
     @staticmethod
     def get_telegram_config():
