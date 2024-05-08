@@ -5,6 +5,7 @@ from pymongo.errors import ConnectionFailure
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 def init_mongo_client(mongodb_uri):
     try:
         client = MongoClient(mongodb_uri)
@@ -103,3 +104,15 @@ class DomainRepo:
         result = self.collection.update_one(query, delete_action)
 
         return result.modified_count > 0
+
+    def save_domains_to_mongodb(self, domain, subdomain):
+        domain_info = {"name": subdomain, "check": "enable"}
+        try:
+            filter = {"domain": domain}
+            update = {"$addToSet": {"subdomains": domain_info}}
+            result = self.collection.update_one(filter, update, upsert=True)
+            if not (result.matched_count > 0 or result.upserted_id is not None):
+                raise Exception("無法添加 domain 到 MongoDB")
+        except Exception as e:
+            self.logger.error("添加 domain 失敗: %s", str(e))
+            raise

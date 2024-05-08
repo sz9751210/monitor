@@ -2,8 +2,9 @@ from utils.cert import get_ssl_cert_info
 
 
 class DomainService:
-    def __init__(self, repo):
+    def __init__(self, repo, cloudflare_manager):
         self.repo = repo
+        self.cloudflare_manager = cloudflare_manager
 
     def get_domain_info(self, platform, env):
         get_result = self.repo.get_domain_from_mongodb(platform, env)
@@ -30,7 +31,6 @@ class DomainService:
             return all_domains
         else:
             raise Exception(f"Domains not found")
-
 
     def add_domain(self, platform, env, domain):
         if get_ssl_cert_info(domain, check_only=True):
@@ -72,3 +72,24 @@ class DomainService:
         if cert is None or cert is False:
             raise ValueError(f"Domain {domain} 證書檢查失敗,請檢查輸入是否正確。")
         return cert
+
+    def process_domains(self):
+        domains = self.cloudflare_manager.fetch_all_domains_and_records()
+        domain_dict = self.cloudflare_manager.convert_domains_to_dict(domains)
+        failed_domains = []
+        valid_domains = []
+
+        for domain, subdomains in domain_dict.items():
+            for subdomain in subdomains:
+                if not get_ssl_cert_info(subdomain, check_only=True):
+                    failed_domains.append(subdomain)
+                    continue
+                self.repo.save_domains_to_mongodb(domain, subdomain)
+            valid_domains.append(domain)
+
+        if failed_domains:
+            raise ValueError(
+                f"以下 Subdomain 證書檢查失敗,請檢查輸入是否正確：{', '.join(failed_domains)}"
+            )
+        
+        return valid_domains

@@ -152,6 +152,16 @@ def setup_handlers(bot, service):
         except Exception as e:
             bot.reply_to(message, str(e))
 
+    @bot.message_handler(commands=["add_cloudflare"])
+    def handle_add_command(message):
+        try:
+            valid_domain = service.process_domains()
+            bot.reply_to(message, f"{convert_to_yaml(valid_domain)} 新增成功")
+        except Exception as e:
+            bot.reply_to(
+                message, f"domain 新增失敗，請檢查輸入的資料。錯誤訊息：{str(e)}"
+            )
+
     @bot.message_handler(commands=["help"])
     def send_help_message(message):
         help_text = """

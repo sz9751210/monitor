@@ -7,6 +7,7 @@ from classes.repos import DomainRepo, init_mongo_client, get_collection
 from classes.services import DomainService
 from utils.config_loader import EnvConfigLoader, YamlConfigLoader
 from utils.scheduler_jobs import setup_scheduler
+from utils.cloudflare import CloudflareManager
 
 
 def setup_bot_handlers(bot, service):
@@ -47,8 +48,10 @@ if __name__ == "__main__":
     collection_name = "cert"
     collection = get_collection(client, collection_name)
 
+    cloudflare_manager = CloudflareManager(cloudflare_api_key, cloudflare_email)
+
     domain_repo = DomainRepo(collection)
-    domain_service = DomainService(domain_repo)
+    domain_service = DomainService(domain_repo, cloudflare_manager)
 
     setup_bot_handlers(bot, domain_service)
     setup_scheduler(
