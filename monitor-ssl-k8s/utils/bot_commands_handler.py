@@ -1,3 +1,4 @@
+import time
 from utils.cert import parse_ssl_cert_info, check_ssl_expiration
 from utils.utils import convert_to_yaml
 
@@ -38,10 +39,16 @@ def setup_handlers(bot, service):
         try:
             domains_data = service.get_all_domains()
             for domain_data in domains_data:
+                for env in domain_data.get("envs", {}):
+                    domain_data["envs"][env] = [
+                        {k: v for k, v in domain.items() if k != "check"}
+                        for domain in domain_data["envs"][env]
+                    ]
                 yaml_domain_data = convert_to_yaml(domain_data)
                 bot.send_message(
                     message.chat.id, f"{yaml_domain_data}", parse_mode="Markdown"
                 )
+                time.sleep(1)
         except Exception as e:
             bot.reply_to(message, str(e))
 
@@ -200,7 +207,7 @@ def setup_handlers(bot, service):
 以下是可用的命令列表及其用途：
 
 /cert_info <domain> - 取得指定 domain 的 SSL 證書資訊。
-/get_all - 從 MongoDB 取得所有 platform 及其下的所有 env 和 domain 的資訊。
+/get_all - 從 MongoDB 取得所有 domain 及其下的所有 subdomain 的資訊。
 /get_subdomain <subdomain> - 取得指定 subdomain 的資訊。
 /get <domain> - 取得指定 domain 下的所有 subdomain 的資訊。
 /add <platform> <env> <domain> - 向 MongoDB 新增一個新的 domain 及其環境和平台。

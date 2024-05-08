@@ -63,10 +63,10 @@ class DomainRepo:
             domain_envs = []
             results = self.collection.find({})
             for item in results:
-                platform = item.get("platform")
-                envs = item.get("envs", {})
-                if platform:
-                    domain_envs.append({"platform": platform, "envs": envs})
+                domain = item.get("domain", {})
+                subdomains = item.get("subdomains", [])
+                if domain:
+                    domain_envs.append({"domain": domain, "subdomains": subdomains})
             return domain_envs
         except Exception as e:
             self.logger.info(f"從 MongoDB 讀取資料失敗: {e}")
