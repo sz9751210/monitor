@@ -3,17 +3,17 @@ from utils.utils import convert_to_yaml
 
 
 def setup_handlers(bot, service):
-    @bot.message_handler(commands=["get"])
+    @bot.message_handler(commands=["get_domain"])
     def handle_get_command(message):
         try:
-            _, platform, env = message.text.split(maxsplit=2)
-            domain_info = service.get_domain_info(platform, env)
+            _, domain = message.text.split(maxsplit=1)
+            domain_info = service.get_domain_info(domain)
             domain_info_yaml = convert_to_yaml(domain_info)
             bot.reply_to(message, domain_info_yaml)
         except ValueError:
             bot.reply_to(
                 message,
-                "使用方式不正確。請按照以下格式輸入：\n/get <platform> <env>",
+                "使用方式不正確。請按照以下格式輸入：\n/get_domain <domain>",
             )
         except Exception as e:
             bot.reply_to(message, str(e))
@@ -202,7 +202,7 @@ def setup_handlers(bot, service):
 /cert_info <domain> - 取得指定 domain 的 SSL 證書資訊。
 /get_all - 從 MongoDB 取得所有 platform 及其下的所有 env 和 domain 的資訊。
 /get_platform <platform> - 取得指定 platform 下所有 env 的 domain 資訊。
-/get <platform> <env> - 取得指定 platform 和 env 下的所有 domain 的資訊。
+/get <domain> - 取得指定 domain 下的所有 subdomain 的資訊。
 /add <platform> <env> <domain> - 向 MongoDB 新增一個新的 domain 及其環境和平台。
 /bulk_add <platform> <env> <domain1> <domain2> ... - 向 MongoDB 批量新增多個 domain 及其環境和平台。
 /update <platform> <env> <old_domain> <new_domain> - 更新指定平台和環境下的 domain 資訊。

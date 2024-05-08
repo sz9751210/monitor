@@ -28,20 +28,15 @@ class DomainRepo:
         self.collection = collection
         self.logger = logging.getLogger(__name__)
 
-    def get_domain_from_mongodb(self, platform, env):
-
-        query = {"platform": platform}
+    def get_domain_from_mongodb(self, domain):
+        query = {"domain": domain}
         result = self.collection.find_one(query)
 
-        if result and "envs" in result and env in result["envs"]:
-            self.logger.info(
-                f"在平台 '{platform}' 和環境 '{env}' 下找到 domain 的訊息。"
-            )
-            return {"env": env, "domains": result["envs"][env]}
+        if result:
+            self.logger.info(f"找到 '{domain}' 的訊息。")
+            return {"domain": domain, "subdomains": result.get("subdomains", [])}
         else:
-            self.logger.info(
-                f"在平台 '{platform}' 和環境 '{env}' 下未找到 domain 的訊息。"
-            )
+            self.logger.info(f"未找到 '{domain}' 的訊息。")
             return None
 
     def get_platform_data_from_mongodb(self, platform):

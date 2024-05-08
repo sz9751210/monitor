@@ -6,17 +6,16 @@ class DomainService:
         self.repo = repo
         self.cloudflare_manager = cloudflare_manager
 
-    def get_domain_info(self, platform, env):
-        get_result = self.repo.get_domain_from_mongodb(platform, env)
+    def get_domain_info(self, domain):
+        get_result = self.repo.get_domain_from_mongodb(domain)
         if get_result:
             simplified_result = {
-                "platform": platform,
-                "env": env,
-                "domains": get_result.get("domains", []),
+                "domain": domain,
+                "subdomains": get_result.get("subdomains", []),
             }
             return simplified_result
         else:
-            raise Exception(f"Domain not found for platform {platform} and env {env}")
+            raise Exception(f"Domain not found for  {domain}")
 
     def get_platform_info(self, platform):
         platform_data = self.repo.get_platform_data_from_mongodb(platform)
