@@ -27,7 +27,7 @@ class CloudflareManager:
             for record in records:
                 if record["type"] in ["A", "CNAME"]:
                     subdomain = record["name"]
-                    if subdomain.startswith('_'):
+                    if subdomain.startswith("_"):
                         continue
                     all_domains_info.append((domain_name, subdomain))
         return all_domains_info
