@@ -37,16 +37,16 @@ class DomainService:
         else:
             raise ValueError("證書檢查失敗, 請檢查輸入的 subdomain 是否正確。")
 
-    def bulk_add_domains(self, platform, env, domains):
-        failed_domains = []
-        for domain in domains:
+    def bulk_add_subdomains(self, domain, subdomains):
+        failed_subdomains = []
+        for subdomain in subdomains:
             if not get_ssl_cert_info(domain, check_only=True):
-                failed_domains.append(domain)
+                failed_subdomains.append(subdomain)
                 continue
-            self.repo.add_domain_to_mongodb(platform, env, domain)
-        if failed_domains:
+            self.repo.add_subdomain_to_mongodb(domain, subdomain)
+        if failed_subdomains:
             raise ValueError(
-                f"以下 Domain 證書檢查失敗,請檢查輸入是否正確：{', '.join(failed_domains)}"
+                f"以下 subdomain 證書檢查失敗,請檢查輸入是否正確：{', '.join(failed_subdomains)}"
             )
 
     def update_domain(self, platform, env, origin_domain, new_domain):

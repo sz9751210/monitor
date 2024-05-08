@@ -84,15 +84,29 @@ class DomainRepo:
     def add_subdomain_to_mongodb(self, domain, subdomain):
         subdomain_info = {"name": subdomain, "check": "enable"}
         try:
+            # 檢查子域名是否已經存在於該域名下
+            if (
+                self.collection.count_documents(
+                    {"domain": domain, "subdomains.name": subdomain}
+                )
+                > 0
+            ):
+                self.logger.info(
+                    f"subdomain '{subdomain}' 已存在於 domain '{domain}' 下，不進行新增。"
+                )
+                return False
+
+            # 如果子域名不存在，則進行添加
             filter = {"domain": domain}
-            update = {"$push": {"subdomains": subdomain_info}}
-            result = self.collection.update_one(
-                filter,
-                update,
-                upsert=True,
-            )
+            update = {
+                "$addToSet": {"subdomains": subdomain_info}
+            }  # 使用 $addToSet 以避免重複添加
+            result = self.collection.update_one(filter, update, upsert=True)
             if not (result.matched_count > 0 or result.upserted_id is not None):
                 raise Exception("無法添加 subdomain 到 MongoDB")
+
+            self.logger.info(f"subdomain '{subdomain}' 已成功新增至 domain '{domain}'。")
+            return True
         except Exception as e:
             self.logger.error("添加 subdomain 失敗: %s", str(e))
             raise

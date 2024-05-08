@@ -72,18 +72,15 @@ def setup_handlers(bot, service):
     def handle_bulk_add_command(message):
         try:
             parts = message.text.split()
-            if len(parts) < 4:
+            if len(parts) < 3:
                 return bot.reply_to(
                     message,
-                    "使用方式不正確。請按照以下格式輸入：\n/bulk_add <platform> <env> <domain1> <domain2> ...",
+                    "使用方式不正確。請按照以下格式輸入：\n/bulk_add <domain> <subdomain1> <subdomain2> ...",
                 )
-            platform = parts[1]
-            env = parts[2]
-            domains = parts[3:]
-            service.bulk_add_domains(platform, env, domains)
-            bot.reply_to(
-                message, f"Platform {platform}, 環境 {env} 下的 domain 批量新增成功。"
-            )
+            domain = parts[1]
+            subdomains = parts[2:]
+            service.bulk_add_subdomains(domain, subdomains)
+            bot.reply_to(message, f"domain {domain} 下的 subdomain 批量新增成功。")
         except ValueError as e:
             bot.reply_to(message, str(e))
         except Exception as e:
@@ -209,7 +206,7 @@ def setup_handlers(bot, service):
 /get_subdomain <subdomain> - 取得指定 subdomain 的資訊。
 /get <domain> - 取得指定 domain 下的所有 subdomain 的資訊。
 /add_subdomain <domain> <subdomain> - 向 MongoDB 新增一個新的 domain 及其 subdomain。
-/bulk_add <platform> <env> <domain1> <domain2> ... - 向 MongoDB 批量新增多個 domain 及其環境和平台。
+/bulk_add <domain> <subdomain1> <subdomain2> ... - 向 MongoDB 批量新增多個 subdomain。
 /update <platform> <env> <old_domain> <new_domain> - 更新指定平台和環境下的 domain 資訊。
 /del <platform> <env> <domain> - 從 MongoDB 刪除指定平台和環境下的 domain。
 /check - 檢查所有 domain 的 SSL 到期時間並通知。
