@@ -116,3 +116,15 @@ class DomainRepo:
         except Exception as e:
             self.logger.error("添加 domain 失敗: %s", str(e))
             raise
+
+    def disable_subdomain(self, subdomain):
+        try:
+            filter = {"subdomains.name": subdomain}
+            update = {"$set": {"subdomains.$.check": "disable"}}
+            result = self.collection.update_one(filter, update)
+            if result.modified_count == 0:
+                raise Exception("未找到指定的 subdomain 或已 disable")
+            return True
+        except Exception as e:
+            self.logger.error("disable subdomain 失敗: %s", str(e))
+            raise

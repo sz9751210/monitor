@@ -91,5 +91,8 @@ class DomainService:
             raise ValueError(
                 f"以下 Subdomain 證書檢查失敗,請檢查輸入是否正確：{', '.join(failed_domains)}"
             )
-        
+
         return valid_domains
+
+    def disable_subdomain(self, subdomain):
+        return self.repo.disable_subdomain(subdomain)

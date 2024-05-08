@@ -162,6 +162,22 @@ def setup_handlers(bot, service):
                 message, f"domain 新增失敗，請檢查輸入的資料。錯誤訊息：{str(e)}"
             )
 
+    @bot.message_handler(commands=["disable"])
+    def handle_disable_command(message):
+        try:
+            _, subdomain = message.text.split(maxsplit=1)
+            service.disable_subdomain(subdomain)
+            bot.reply_to(message, f"subdomain {subdomain} 停用成功")
+        except ValueError:
+            bot.reply_to(
+                message,
+                "使用方式不正確。請按照以下格式輸入：\n/disable <subdomain>",
+            )
+        except Exception as e:
+            bot.reply_to(
+                message, f"domain 停用失敗，請檢查輸入的資料。錯誤訊息：{str(e)}"
+            )
+
     @bot.message_handler(commands=["help"])
     def send_help_message(message):
         help_text = """
