@@ -52,18 +52,16 @@ def setup_handlers(bot, service):
         except Exception as e:
             bot.reply_to(message, str(e))
 
-    @bot.message_handler(commands=["add"])
-    def handle_add_command(message):
+    @bot.message_handler(commands=["add_subdomain"])
+    def handle_add_subdomain_command(message):
         try:
-            _, platform, env, domain = message.text.split(maxsplit=3)
-            service.add_domain(platform, env, domain)
-            bot.reply_to(
-                message, f"Platform {platform}, 環境為 {env}, domain {domain} 新增成功"
-            )
+            _, domain, subdomain = message.text.split(maxsplit=2)
+            service.add_subdomain(domain, subdomain)
+            bot.reply_to(message, f"Domain {domain}, subdomain {subdomain} 新增成功")
         except ValueError:
             bot.reply_to(
                 message,
-                "使用方式不正確。請按照以下格式輸入：\n/add <platform> <env> <domain>",
+                "使用方式不正確。請按照以下格式輸入：\n/add <domain> <subdomain>",
             )
         except Exception as e:
             bot.reply_to(
@@ -210,7 +208,7 @@ def setup_handlers(bot, service):
 /get_all - 從 MongoDB 取得所有 domain 及其下的所有 subdomain 的資訊。
 /get_subdomain <subdomain> - 取得指定 subdomain 的資訊。
 /get <domain> - 取得指定 domain 下的所有 subdomain 的資訊。
-/add <platform> <env> <domain> - 向 MongoDB 新增一個新的 domain 及其環境和平台。
+/add_subdomain <domain> <subdomain> - 向 MongoDB 新增一個新的 domain 及其 subdomain。
 /bulk_add <platform> <env> <domain1> <domain2> ... - 向 MongoDB 批量新增多個 domain 及其環境和平台。
 /update <platform> <env> <old_domain> <new_domain> - 更新指定平台和環境下的 domain 資訊。
 /del <platform> <env> <domain> - 從 MongoDB 刪除指定平台和環境下的 domain。

@@ -46,16 +46,25 @@ class DomainRepo:
 
         if result:
             # 從結果中提取子域名資訊
-            subdomain_info = next((item for item in result["subdomains"] if item["name"] == subdomain), None)
+            subdomain_info = next(
+                (item for item in result["subdomains"] if item["name"] == subdomain),
+                None,
+            )
             if subdomain_info:
                 self.logger.info(f"Found subdomain information for '{subdomain}'.")
                 # 返回子域名和它所屬的主域名
-                return {"subdomain": subdomain, "domain": result["domain"], "check": subdomain_info.get("check")}
+                return {
+                    "subdomain": subdomain,
+                    "domain": result["domain"],
+                    "check": subdomain_info.get("check"),
+                }
             else:
                 self.logger.info(f"Subdomain '{subdomain}' not found in the results.")
                 return None
         else:
-            self.logger.info(f"No domain information found containing subdomain '{subdomain}'.")
+            self.logger.info(
+                f"No domain information found containing subdomain '{subdomain}'."
+            )
             return None
 
     def get_all_domains_from_mongodb(self):
@@ -72,17 +81,20 @@ class DomainRepo:
             self.logger.info(f"從 MongoDB 讀取資料失敗: {e}")
             return {}
 
-    def add_domain_to_mongodb(self, platform, env, domain):
+    def add_subdomain_to_mongodb(self, domain, subdomain):
+        subdomain_info = {"name": subdomain, "check": "enable"}
         try:
+            filter = {"domain": domain}
+            update = {"$push": {"subdomains": subdomain_info}}
             result = self.collection.update_one(
-                {"platform": platform},
-                {"$addToSet": {f"envs.{env}": domain}},
+                filter,
+                update,
                 upsert=True,
             )
             if not (result.matched_count > 0 or result.upserted_id is not None):
-                raise Exception("無法添加 domain 到 MongoDB")
+                raise Exception("無法添加 subdomain 到 MongoDB")
         except Exception as e:
-            self.logger.error("添加 domain 失敗: %s", str(e))
+            self.logger.error("添加 subdomain 失敗: %s", str(e))
             raise
 
     def write_domain_data_to_mongodb(self, domain_data):

@@ -31,11 +31,11 @@ class DomainService:
         else:
             raise Exception(f"Domains not found")
 
-    def add_domain(self, platform, env, domain):
-        if get_ssl_cert_info(domain, check_only=True):
-            return self.repo.add_domain_to_mongodb(platform, env, domain)
+    def add_subdomain(self, domain, subdomain):
+        if get_ssl_cert_info(subdomain, check_only=True):
+            return self.repo.add_subdomain_to_mongodb(domain, subdomain)
         else:
-            raise ValueError("證書檢查失敗, 請檢查輸入的 domain 是否正確。")
+            raise ValueError("證書檢查失敗, 請檢查輸入的 subdomain 是否正確。")
 
     def bulk_add_domains(self, platform, env, domains):
         failed_domains = []
