@@ -96,3 +96,6 @@ class DomainService:
 
     def disable_subdomain(self, subdomain):
         return self.repo.disable_subdomain(subdomain)
+
+    def enable_subdomain(self, subdomain):
+        return self.repo.enable_subdomain(subdomain)

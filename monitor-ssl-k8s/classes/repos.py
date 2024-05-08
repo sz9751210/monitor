@@ -128,3 +128,15 @@ class DomainRepo:
         except Exception as e:
             self.logger.error("disable subdomain 失敗: %s", str(e))
             raise
+
+    def enable_subdomain(self, subdomain):
+        try:
+            filter = {"subdomains.name": subdomain}
+            update = {"$set": {"subdomains.$.check": "enable"}}
+            result = self.collection.update_one(filter, update)
+            if result.modified_count == 0:
+                raise Exception("未找到指定的 subdomain 或已 enable")
+            return True
+        except Exception as e:
+            self.logger.error("enable subdomain 失敗: %s", str(e))
+            raise
