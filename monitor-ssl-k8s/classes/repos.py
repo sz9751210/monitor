@@ -105,7 +105,9 @@ class DomainRepo:
             if not (result.matched_count > 0 or result.upserted_id is not None):
                 raise Exception("無法添加 subdomain 到 MongoDB")
 
-            self.logger.info(f"subdomain '{subdomain}' 已成功新增至 domain '{domain}'。")
+            self.logger.info(
+                f"subdomain '{subdomain}' 已成功新增至 domain '{domain}'。"
+            )
             return True
         except Exception as e:
             self.logger.error("添加 subdomain 失敗: %s", str(e))
@@ -117,15 +119,26 @@ class DomainRepo:
             self.collection.insert_one(document)
         self.logger.info("資料已成功寫入 MongoDB。")
 
-    def update_domain_in_mongodb(self, platform, env, origin_domain, new_domain):
-        query = {"platform": platform, f"envs.{env}": origin_domain}
-        update_action = {"$set": {f"envs.$[elem]": new_domain}}
-        array_filters = [{"elem": origin_domain}]
-        update_result = self.collection.update_one(
-            query, update_action, arrayFilters=array_filters
-        )
-
-        return update_result.modified_count > 0
+    def update_subdomain_in_mongodb(self, domain, origin_subdomain, new_subdomain):
+        try:
+            query = {
+                "domain": domain,
+                "subdomains": {"$elemMatch": {"name": origin_subdomain}},
+            }
+            update = {"$set": {"subdomains.$.name": new_subdomain}}
+            result = self.collection.update_one(query, update)
+            if result.modified_count == 0:
+                if self.collection.count_documents(query) == 0:
+                    self.logger.info(
+                        f"未找到 domain '{domain}' 的 subdomain '{origin_subdomain}'。"
+                    )
+                    return False
+            return True
+        except Exception as e:
+            self.logger.error(
+                f"更新 subdomain '{origin_subdomain}' 至 '{new_subdomain}' 失敗: {str(e)}"
+            )
+            return False
 
     def delete_domain(self, platform, env, domain_to_delete):
         query = {"platform": platform}

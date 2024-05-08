@@ -49,16 +49,16 @@ class DomainService:
                 f"以下 subdomain 證書檢查失敗,請檢查輸入是否正確：{', '.join(failed_subdomains)}"
             )
 
-    def update_domain(self, platform, env, origin_domain, new_domain):
-        if get_ssl_cert_info(new_domain, check_only=True):
-            result = self.repo.update_domain_in_mongodb(
-                platform, env, origin_domain, new_domain
+    def update_subdomain(self, domain, origin_subdomain, new_subdomain):
+        if get_ssl_cert_info(new_subdomain, check_only=True):
+            result = self.repo.update_subdomain_in_mongodb(
+                domain, origin_subdomain, new_subdomain
             )
             if not result:
                 raise Exception("更新失敗，請檢查輸入的資料。")
             return result
         else:
-            raise ValueError("證書檢查失敗, 請檢查輸入的 domain 是否正確。")
+            raise ValueError("證書檢查失敗, 請檢查輸入的 subdomain 是否正確。")
 
     def delete_domain(self, platform, env, domain_to_delete):
         result = self.repo.delete_domain(platform, env, domain_to_delete)

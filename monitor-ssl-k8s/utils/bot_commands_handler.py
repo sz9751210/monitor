@@ -91,17 +91,17 @@ def setup_handlers(bot, service):
     @bot.message_handler(commands=["update"])
     def handle_update_command(message):
         try:
-            _, platform, env, origin_domain, new_domain = message.text.split(maxsplit=4)
-            service.upate_domain(platform, env, origin_domain, new_domain)
-            bot.reply_to(message, f"Platform {platform}, env {env}, domain 更新成功。")
+            _, domain, origin_subdomain, new_subdomain = message.text.split(maxsplit=3)
+            service.update_subdomain(domain,  origin_subdomain, new_subdomain)
+            bot.reply_to(message, f"Domain {domain}, subdomain {new_subdomain} 更新成功。")
         except ValueError:
             bot.reply_to(
                 message,
-                "使用方式不正確。請按照以下格式輸入：\n/update <platform> <env> <old_domain> <new_domain>",
+                "使用方式不正確。請按照以下格式輸入：\n/update <domain> <old_subdomain> <new_subdomain>",
             )
         except Exception as e:
             bot.reply_to(
-                message, f"Domain 更新失敗，請檢查輸入的資料。錯誤訊息：{str(e)}"
+                message, f"subdomain 更新失敗，請檢查輸入的資料。錯誤訊息：{str(e)}"
             )
 
     @bot.message_handler(commands=["del"])
@@ -207,7 +207,7 @@ def setup_handlers(bot, service):
 /get <domain> - 取得指定 domain 下的所有 subdomain 的資訊。
 /add_subdomain <domain> <subdomain> - 向 MongoDB 新增一個新的 domain 及其 subdomain。
 /bulk_add <domain> <subdomain1> <subdomain2> ... - 向 MongoDB 批量新增多個 subdomain。
-/update <platform> <env> <old_domain> <new_domain> - 更新指定平台和環境下的 domain 資訊。
+/update <domain> <old_subdomain> <new_subdomain> - 更新指定 domain 下的 subdomain 資訊。
 /del <platform> <env> <domain> - 從 MongoDB 刪除指定平台和環境下的 domain。
 /check - 檢查所有 domain 的 SSL 到期時間並通知。
 
