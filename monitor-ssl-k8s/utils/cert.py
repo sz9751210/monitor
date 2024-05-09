@@ -2,6 +2,12 @@ import ssl
 import socket
 import requests
 from datetime import datetime
+from utils.config_loader import YamlConfigLoader
+
+yaml_loader = YamlConfigLoader("config.yaml")
+telegram_config = yaml_loader.get_telegram_config()
+telegram_bot_token = telegram_config["telegram_bot_token"]
+telegram_group_id = telegram_config["telegram_group_id"]
 
 
 def get_ssl_cert_info(domain, check_only=False):
@@ -72,9 +78,8 @@ def get_ssl_cert_expiry_date(cert):
         return None
 
 
-def check_ssl_expiration(domain, subdomain, telegram_bot_token, telegram_group_id):
-    expire_date = get_ssl_cert_expiry_date(domain)
-    print(expire_date)
+def check_ssl_expiration(domain, subdomain, cert_info):
+    expire_date = get_ssl_cert_expiry_date(cert_info)
     if expire_date:
         remaining_days = (expire_date - datetime.utcnow()).days
         if remaining_days <= 30:
@@ -83,22 +88,28 @@ def check_ssl_expiration(domain, subdomain, telegram_bot_token, telegram_group_i
                     "來源: Gitlab-Runner",
                     "標題: 憑證到期",
                     f"domain : {domain}",
-                    f"到期日: {expire_date.strftime('%Y-%m-%d')}",
                     f"subdomain: {subdomain}",
+                    f"到期日: {expire_date.strftime('%Y-%m-%d')}",
                 ]
             )
 
             print(f"{domain} 的 SSL 證書將在 {remaining_days} 天內過期。")
-            send_notification(message, domain, telegram_bot_token, telegram_group_id)
+            send_notification(message, domain)
         else:
             print(
                 f"{domain} 的 SSL 證書過期日期是 {expire_date.strftime('%Y-%m-%d')}。"
             )
 
 
-def send_notification(message, domain, webhook_url, auth_user, auth_password):
-    response = requests.post(webhook_url, json=message, auth=(auth_user, auth_password))
+def send_notification(message, domain):
+    telegram_send_message_url = (
+        f"https://api.telegram.org/bot{telegram_bot_token}/sendMessage"
+    )
+    response = requests.post(
+        telegram_send_message_url, data={"chat_id": telegram_group_id, "text": message}
+    )
+
     if response.status_code == 200:
-        print(f"Notification sent for {domain}")
+        print(f"已為 {domain} 發送通知")
     else:
-        print(f"Send failed for {domain}")
+        print(f"為 {domain} 發送失敗")
