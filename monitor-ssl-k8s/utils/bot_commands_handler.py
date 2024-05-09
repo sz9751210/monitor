@@ -41,7 +41,7 @@ def setup_handlers(bot, service):
             for domain_data in domains_data:
                 for env in domain_data.get("envs", {}):
                     domain_data["envs"][env] = [
-                        {k: v for k, v in domain.items() if k != "check"}
+                        {k: v for k, v in domain.items() if k != "enable"}
                         for domain in domain_data["envs"][env]
                     ]
                 yaml_domain_data = convert_to_yaml(domain_data)
@@ -146,8 +146,8 @@ def setup_handlers(bot, service):
                 subdomains_list = domain_data["subdomains"]
                 for subdomain_dict in subdomains_list:
                     subdomain = subdomain_dict["name"]
-                    subdomain_status = subdomain_dict["check"]
-                    if subdomain_status == "enable":
+                    subdomain_status = subdomain_dict["enable"]
+                    if subdomain_status == True:
                         cert_info = service.get_cert_info(subdomain)
                         # 假設有函數 check_ssl_expiration 來檢查 SSL 證書的到期時間
                         check_ssl_expiration(domain, subdomain, cert_info)

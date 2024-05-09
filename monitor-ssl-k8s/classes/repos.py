@@ -56,7 +56,7 @@ class DomainRepo:
                 return {
                     "subdomain": subdomain,
                     "domain": result["domain"],
-                    "check": subdomain_info.get("check"),
+                    "enable": subdomain_info.get("enable"),
                 }
             else:
                 self.logger.info(f"Subdomain '{subdomain}' not found in the results.")
@@ -82,7 +82,7 @@ class DomainRepo:
             return {}
 
     def add_subdomain_to_mongodb(self, domain, subdomain):
-        subdomain_info = {"name": subdomain, "check": "enable"}
+        subdomain_info = {"name": subdomain, "enable": True}
         try:
             # 檢查子域名是否已經存在於該域名下
             if (
@@ -160,7 +160,7 @@ class DomainRepo:
             raise
 
     def save_domains_to_mongodb(self, domain, subdomain):
-        domain_info = {"name": subdomain, "check": "enable"}
+        domain_info = {"name": subdomain, "enable": True}
         try:
             filter = {"domain": domain}
             update = {"$addToSet": {"subdomains": domain_info}}
@@ -174,7 +174,7 @@ class DomainRepo:
     def disable_subdomain(self, subdomain):
         try:
             filter = {"subdomains.name": subdomain}
-            update = {"$set": {"subdomains.$.check": "disable"}}
+            update = {"$set": {"subdomains.$.enable": False}}
             result = self.collection.update_one(filter, update)
             if result.modified_count == 0:
                 raise Exception("未找到指定的 subdomain 或已 disable")
@@ -186,7 +186,7 @@ class DomainRepo:
     def enable_subdomain(self, subdomain):
         try:
             filter = {"subdomains.name": subdomain}
-            update = {"$set": {"subdomains.$.check": "enable"}}
+            update = {"$set": {"subdomains.$.enable": True}}
             result = self.collection.update_one(filter, update)
             if result.modified_count == 0:
                 raise Exception("未找到指定的 subdomain 或已 enable")
