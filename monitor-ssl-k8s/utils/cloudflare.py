@@ -25,9 +25,11 @@ class CloudflareManager:
             records = records_response.json().get("result", [])
 
             for record in records:
-                if record["type"] in ["A", "CNAME"]:
+                if record["type"] in ["A", "CNAME"] and not record.get('proxied', False):
                     subdomain = record["name"]
                     if subdomain.startswith("_"):
+                        continue
+                    if domain_name == subdomain:
                         continue
                     all_domains_info.append((domain_name, subdomain))
         return all_domains_info
