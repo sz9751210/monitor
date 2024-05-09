@@ -78,7 +78,7 @@ def get_ssl_cert_expiry_date(cert):
         return None
 
 
-def check_ssl_expiration(domain, subdomain, cert_info):
+def check_ssl_expiration(subdomain, cert_info):
     expire_date = get_ssl_cert_expiry_date(cert_info)
     if expire_date:
         remaining_days = (expire_date - datetime.utcnow()).days
@@ -86,22 +86,22 @@ def check_ssl_expiration(domain, subdomain, cert_info):
             message = "\n".join(
                 [
                     "來源: Cloudflare",
-                    "標題: 憑證到期",
-                    f"domain : {domain}",
-                    f"subdomain: {subdomain}",
+                    "標題: 憑證將到期",
+                    f"domain : {subdomain}",
                     f"到期日: {expire_date.strftime('%Y-%m-%d')}",
+                    f"剩餘天數: {remaining_days}",
                 ]
             )
 
-            print(f"{domain} 的 SSL 證書將在 {remaining_days} 天內過期。")
-            send_notification(message, domain)
+            print(f"{subdomain} 的 SSL 證書將在 {remaining_days} 天內過期。")
+            send_notification(message, subdomain)
         else:
             print(
-                f"{domain} 的 SSL 證書過期日期是 {expire_date.strftime('%Y-%m-%d')}。"
+                f"{subdomain} 的 SSL 證書過期日期是 {expire_date.strftime('%Y-%m-%d')}。"
             )
 
 
-def send_notification(message, domain):
+def send_notification(message, subdomain):
     telegram_send_message_url = (
         f"https://api.telegram.org/bot{telegram_bot_token}/sendMessage"
     )
@@ -110,6 +110,6 @@ def send_notification(message, domain):
     )
 
     if response.status_code == 200:
-        print(f"已為 {domain} 發送通知")
+        print(f"已為 {subdomain} 發送通知")
     else:
-        print(f"為 {domain} 發送失敗")
+        print(f"為 {subdomain} 發送失敗")
