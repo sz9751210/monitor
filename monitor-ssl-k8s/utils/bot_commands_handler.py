@@ -107,17 +107,17 @@ def setup_handlers(bot, service):
     @bot.message_handler(commands=["del"])
     def handle_delete_command(message):
         try:
-            _, platform, env, domain = message.text.split(maxsplit=3)
-            service.delete_domain(platform, env, domain)
-            bot.reply_to(message, f"Platform {platform}, env {env}, domain 刪除成功。")
+            _, subdomain = message.text.split(maxsplit=1)
+            service.delete_subdomain(subdomain)
+            bot.reply_to(message, f"subdomain {subdomain} 刪除成功。")
         except ValueError:
             bot.reply_to(
                 message,
-                "使用方式不正確。請按照以下格式輸入：\n/del <platform> <env> <domain>",
+                "使用方式不正確。請按照以下格式輸入：\n/del <subdomain>",
             )
         except Exception as e:
             bot.reply_to(
-                message, f"Domain 刪除失敗，請檢查輸入的資料。錯誤訊息：{str(e)}"
+                message, f"subomain 刪除失敗，請檢查輸入的資料。錯誤訊息：{str(e)}"
             )
 
     @bot.message_handler(commands=["cert_info"])
@@ -208,7 +208,7 @@ def setup_handlers(bot, service):
 /add_subdomain <domain> <subdomain> - 向 MongoDB 新增一個新的 domain 及其 subdomain。
 /bulk_add <domain> <subdomain1> <subdomain2> ... - 向 MongoDB 批量新增多個 subdomain。
 /update <domain> <old_subdomain> <new_subdomain> - 更新指定 domain 下的 subdomain 資訊。
-/del <platform> <env> <domain> - 從 MongoDB 刪除指定平台和環境下的 domain。
+/del <subdomain> - 從 MongoDB 刪除指定的 subdomain。
 /check - 檢查所有 domain 的 SSL 到期時間並通知。
 
 請根據需要使用上述命令。

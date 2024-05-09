@@ -60,10 +60,10 @@ class DomainService:
         else:
             raise ValueError("證書檢查失敗, 請檢查輸入的 subdomain 是否正確。")
 
-    def delete_domain(self, platform, env, domain_to_delete):
-        result = self.repo.delete_domain(platform, env, domain_to_delete)
+    def delete_subdomain(self, subdomain_to_delete):
+        result = self.repo.delete_subdomain(subdomain_to_delete)
         if not result:
-            raise Exception("未找到匹配的 domain 或環境，刪除未執行。")
+            raise Exception("未找到匹配的 subdomain，刪除未執行。")
         return result
 
     def get_cert_info(self, domain):

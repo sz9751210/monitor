@@ -140,12 +140,24 @@ class DomainRepo:
             )
             return False
 
-    def delete_domain(self, platform, env, domain_to_delete):
-        query = {"platform": platform}
-        delete_action = {"$pull": {f"envs.{env}": domain_to_delete}}
-        result = self.collection.update_one(query, delete_action)
-
-        return result.modified_count > 0
+    def delete_subdomain(self, subdomain_to_delete):
+        try:
+            # 建構查詢來找到包含子 subdomain 的文檔
+            query = {"subdomains.name": subdomain_to_delete}
+            # 建構更新操作來移除 subdomain
+            update = {
+                "$pull": {"subdomains": {"name": subdomain_to_delete}}
+            }
+            # 執行更新操作
+            result = self.collection.update_one(query, update)
+            if result.modified_count == 0:
+                # 如果沒有文檔被修改，可能是因為沒找到該 subdomain
+                raise Exception("未找到匹配的 subdomain，刪除未執行。")
+            self.logger.info(f"subdomain '{subdomain_to_delete}' 已成功從 MongoDB 中刪除。")
+            return True  # 成功刪除
+        except Exception as e:
+            self.logger.error(f"刪除 subdomain 時發生錯誤: {str(e)}")
+            raise
 
     def save_domains_to_mongodb(self, domain, subdomain):
         domain_info = {"name": subdomain, "check": "enable"}
