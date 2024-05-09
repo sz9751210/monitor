@@ -85,7 +85,7 @@ def check_ssl_expiration(domain, subdomain, cert_info):
         if remaining_days <= 30:
             message = "\n".join(
                 [
-                    "來源: Gitlab-Runner",
+                    "來源: Cloudflare",
                     "標題: 憑證到期",
                     f"domain : {domain}",
                     f"subdomain: {subdomain}",
